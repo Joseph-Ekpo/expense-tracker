@@ -4,31 +4,30 @@ import datetime
 
 # Defines the structure for an expense
 class Expense:
-    
-    # expense_id = 0
 
     def __init__(self, description: str, amount: float, date: str, category: str):
-        # self.id = Expense.expense_id
-        # Expense.expense_id += 1
+        self.id = None
         self.description = description
         self.amount = amount
         self.date = date
         self.category = category
     
 
-    
 # Structure for handling expenses (adding, deleting, listing, summarizing + reading JSON)
 class Tracker:
     def __init__(self):
-        self.json_data_path = Path.home() / "expense-tracker" / "expenses.json"
-        # print(self.json_data_path.mkdir(parents=True, exist_ok=True))
-        print(self.json_data_path.exists())
+        # Create a file to read and write json data between calls to the app
+        self.json_data_path = Path.home() / ".expense-tracker" / "expenses.json"
+        self.json_data_path.parent.mkdir(parents=True, exist_ok=True)
         
+        if not self.json_data_path.exists():
+            with open(self.json_data_path, "w", encoding="utf-8") as f:
+                json.dump([], f, indent=2)
+
     
     def check_expense_file(self):
         # make sure the chosen file still exists
-        print(self.json_data_path)
-        
+        return self.json_data_path.exists()
     
 
     def load_rows(self):

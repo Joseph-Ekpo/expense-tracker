@@ -1,7 +1,6 @@
 from typing import Optional
 from expense import Expense, Tracker
 import typer
-import datetime
 from rich import print
 
 # Goals
@@ -20,13 +19,13 @@ from rich import print
 app = typer.Typer(name="Expense Tracker")
 expense_tracker = Tracker()
 
-# help="Description for this expense."
+
 @app.command()
 def add(
-    description: str = typer.Option("item", "--description", "-dsc"),
-    amount: float = typer.Option(0.0, "--amount", "-amt"), 
-    date: Optional[str] = typer.Option(None, "--date", "-d"), 
-    category: str = typer.Option("misc", "--category", "-cat")
+    description: str = typer.Option("item", "--description", "-dsc", help="Brief description"),
+    amount: float = typer.Option(0.0, "--amount", "-amt", help="Dollar amount ie. 12.50"), 
+    date: Optional[str] = typer.Option(None, "--date", "-d", help="YYYY-MM-DD"), 
+    category: str = typer.Option("misc", "--category", "-cat", help="General Category ie Food/Entertainment etc..")
     ):
     
     expense_tracker.add(Expense(description, amount, date, category))
@@ -34,19 +33,55 @@ def add(
 
 
 @app.command()
-def update(id):
-    print(f"Updated: expense id:{id}")
+def update(
+    id: int = typer.Option(default=...),
+    description: str = typer.Option("item", "--description", "-dsc"),
+    amount: float = typer.Option(0.0, "--amount", "-amt"), 
+    date: Optional[str] = typer.Option(None, "--date", "-d"), 
+    category: str = typer.Option("misc", "--category", "-cat")
+):
+    is_updated = expense_tracker.update(id, Expense(description, amount, date, category))
+    if not is_updated:
+        print(f"Could not update {id}")
+    else:
+        print(f"Updated: expense id: {id}")
 
 
 @app.command()
-def delete(id):
-    print(f"Deleted Expense ID-{id}")
+def delete(id: int):
+    if not expense_tracker.delete(id):
+        print(f"{id} does not exist...")
+    else:
+        print(f"Deleted Expense ID-{id}")
 
 
 @app.command()
 def list():
-    print(f"Listing expenses...")
-    expense_tracker.list()
+    #TODO: Rich Print this
+    expense_list_data = expense_tracker.list()
+    print(f"Listing a total of {len(expense_list_data)}")
+    
+    print(expense_tracker.list())
+
+
+@app.command()
+def summary(
+    month: int = typer.Option(default=0),
+    year: int = typer.Option(default=None)
+):
+    print(f"Providing summary for month {month}")
+    print(expense_tracker.summary(month, year))
+
+
+@app.command()
+def convert(
+    location: str = typer.Argument(default=None, help=r"Path to file ie. C:\Users\Public\Downloads")
+):
+    if expense_tracker.convert_to_csv(location):
+        print(f"Conversion succesful. File saved to: '{location}'")
+    else:
+        print(f"Could not save to: '{location}'")
+    
 
 
 if __name__ == '__main__':

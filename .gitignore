@@ -1,17 +1,35 @@
-# Virtual environment
-.venv/
-
-# Python cache / bytecode
+# --- Python ---
 __pycache__/
 *.py[cod]
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
 
-# Test / tool caches
+# --- Virtual environments ---
+.venv/
+venv/
+ENV/
+env/
+
+# --- Tool caches ---
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
-# OS/editor noise
-.DS_Store
+# --- Editors/OS ---
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db
 
-#local data folder (optional)
+# --- Local app data / outputs ---
 data/
+*.log
+*.csv
+
+# If I need to store sample expenses locally in-repo:
+expenses.json

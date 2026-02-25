@@ -28,8 +28,8 @@ def add(
     category: str = typer.Option("misc", "--category", "-cat", help="General Category ie Food/Entertainment etc..")
     ):
     
-    expense_tracker.add(Expense(description, amount, date, category))
-    # print(f"Added new expense: {amount}, on {datetime.date.today()}")
+    added = expense_tracker.add(Expense(description, amount, date, category))
+    print(f"Added new expense ID {added}: {amount}")
 
 
 @app.command()
@@ -59,17 +59,17 @@ def delete(id: int):
 def list():
     #TODO: Rich Print this
     expense_list_data = expense_tracker.list()
-    print(f"Listing a total of {len(expense_list_data)}")
+    print(f"Total # of items: {len(expense_list_data)}\n")
     
     print(expense_tracker.list())
 
 
 @app.command()
 def summary(
-    month: int = typer.Option(default=0),
+    month: int = typer.Option(default=None),
     year: int = typer.Option(default=None)
 ):
-    print(f"Providing summary for month {month}")
+    print(f"Providing summary --> ")
     print(expense_tracker.summary(month, year))
 
 

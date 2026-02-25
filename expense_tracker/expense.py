@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 import datetime 
-import re
+
 
 # Defines the structure for an expense
 class Expense:
@@ -60,21 +60,11 @@ class Tracker:
             print("JSON file did not exist, creating now...\n")
             with open(self.json_data_path, "w", encoding="utf-8") as f:
                 json.dump([], f, indent=2)
-        
-        # Variable that quickly associates row number with expense id
-        self.row_tracker = {}
 
     
     def check_expense_file(self) -> bool:
         # Ensure the data file still exists
         return self.json_data_path.exists() and self.json_data_path.is_file()
-    
-
-    # def dict_to_json(self, data) -> list[dict]:
-    #     pass
-
-    # def json_to_dict(self, data) -> dict:
-    #     pass
     
 
     def load_rows(self) -> list[dict]:
@@ -101,7 +91,7 @@ class Tracker:
 
 
     # Add Expense 
-    def add(self, expense: Expense) -> bool:
+    def add(self, expense: Expense) -> int:
         #  If the user does not provide a date, the default will be today's date
         if not expense.date:
             # Converts datetime object to string with format YYYY-MM-DD
@@ -121,10 +111,9 @@ class Tracker:
         
         rows.append(new_row)
         self.save_rows(rows)
-        print(f"New expense (ID: {expense.id}) added successfully -->\n${expense.amount} | {expense.description} | {expense.date}")
-        return True
+        # print(f"New expense (ID: {expense.id}) added successfully -->\n${expense.amount} | {expense.description} | {expense.date}")
+        return expense.id
 
-        
 
     # Delete Expense by ID
     def delete(self, id) -> bool:
@@ -166,29 +155,67 @@ class Tracker:
     def summary(self, target_month, target_year) -> dict:
         # Summary definition -->
         # {total: sum(expenses), highest: max(expenses), [expenses, sorted by date]}
+        present_year = datetime.date.today().year
 
+        # If there's no data, return a dict with a 0-total
         rows = self.load_rows()
-        summary = {"total": 0.0, "highest":0.0, "expenses":[]}
+        if not rows[0]:
+            summary = {"total": 0.0, "highest":0.0, "expenses":[]}
+            return summary
 
+        total = 0.0
+        highest = 0.0
+        targeted_expenses = []
         if not target_month and not target_year:
             
             # no month AND no year provided --> General Summary 
             # total spent, highest expense breakdown
             # provide full expense summary, ordered from most recent to oldest
-            total = 0.0
             highest = rows[0]["amount"]
             for row in rows:
                 if row["amount"] > highest:
                     highest = row["amount"]
                 total += row["amount"]
             
-            summary = {"total": total, "highest": highest, "expenses": rows}
+            targeted_expenses = rows
         elif target_month and not target_year:
             # generate summary only for dates within specified target month, assume the current year
-            pass
+            for row in rows:
+                # year = current year, month = target_month
+                row_year= datetime.date.fromisoformat(row["date"]).year
+                row_month = datetime.date.fromisoformat(row["date"]).month
+
+                if (row_month == target_month) and (row_year == present_year):
+                    targeted_expenses.append(row)
+
+                    total += row["amount"]
+                    if row["amount"] > highest:
+                        highest = row["amount"]
         elif target_year and not target_month:
-            # generate summary only for dates within specific
-            pass
+            # generate summary only for dates within target year
+            for row in rows:
+                row_year = datetime.date.fromisoformat(row["date"]).year
+                if row_year == target_year:
+                    targeted_expenses.append(row)
+                    total += row["amount"]
+                    if row["amount"] > highest:
+                        highest = row["amount"]
+        else:
+            for row in rows:
+                row_year= datetime.date.fromisoformat(row["date"]).year
+                row_month = datetime.date.fromisoformat(row["date"]).month
+
+                if (row_month == target_month) and (row_year == target_year):
+                    targeted_expenses.append(row)
+
+                    total += row["amount"]
+                    if row["amount"] > highest:
+                        highest = row["amount"]
+            
+
+        summary = {"total": round(total, 2),
+                   "highest": round(highest, 2),
+                   "expenses": sorted(targeted_expenses, key=lambda x: datetime.date.fromisoformat(x["date"]), reverse=True)}
 
         return summary
 

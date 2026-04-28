@@ -1,22 +1,11 @@
 from typing import Optional
 from .expense import Expense, Tracker
+from .styles import console, error, header, info, present_summary, success, expenses_table
 import typer
-from rich import print
+import rich
 
-# Goals
-# Users can add an expense with a description and amount.
-# Users can update an expense.
-# Users can delete an expense.
-# Users can view all expenses.
-# Users can view a summary of all expenses.
-# Users can view a summary of expenses for a specific month (of current year).
 
-# Extra
-# Add expense categories and allow users to filter expenses by category.
-# Allow users to set a budget for each month and show a warning when the user exceeds the budget.
-# Allow users to export expenses to a CSV file.
-
-app = typer.Typer(name="Expense Tracker")
+app = typer.Typer(name="expense-tracker", rich_markup_mode="rich")
 expense_tracker = Tracker()
 
 
@@ -29,7 +18,11 @@ def add(
     ):
     
     added = expense_tracker.add(Expense(description, amount, date, category))
-    print(f"Added new expense ID {added}: {amount}")
+    
+    header("Add")
+    added = expense_tracker.add(Expense(description, amount, date, category))
+    success(f"Added expense [bold]{added}[/bold] · ${amount:,.2f}")
+    
 
 
 @app.command()
@@ -40,28 +33,32 @@ def update(
     date: Optional[str] = typer.Option(None, "--date", "-d"), 
     category: str = typer.Option("misc", "--category", "-cat")
 ):
+    header("Update")
     is_updated = expense_tracker.update(id, Expense(description, amount, date, category))
     if not is_updated:
-        print(f"Could not update {id}")
+        error(f"Expense [bold]{id}[/bold] does not exist")
     else:
-        print(f"Updated: expense id: {id}")
+        success(f"Updated expense [bold]{id}[/bold]")
 
 
 @app.command()
 def delete(id: int):
+    header("Delete")
     if not expense_tracker.delete(id):
-        print(f"{id} does not exist...")
+        error(f"Expense [bold]{id}[/bold] does not exist")
     else:
-        print(f"Deleted Expense ID-{id}")
+        success(f"Deleted expense [bold]{id}[/bold]")
 
 
 @app.command()
-def list():
-    #TODO: Rich Print this
-    expense_list_data = expense_tracker.list()
-    print(f"Total # of items: {len(expense_list_data)}\n")
-    
-    print(expense_tracker.list())
+def ls():
+    header("List")
+    expense_list_data = expense_tracker.list_expenses()
+    if not expense_list_data:
+        info("No expenses saved yet.")
+        return
+
+    console.print(expenses_table(expense_list_data, title=f"All Expenses ({len(expense_list_data)})"))
 
 
 @app.command()
@@ -69,20 +66,20 @@ def summary(
     month: int = typer.Option(default=None),
     year: int = typer.Option(default=None)
 ):
-    print(f"Providing summary --> ")
-    print(expense_tracker.summary(month, year))
+    header("Summary")
+    present_summary(expense_tracker.summary(month, year), month, year)
 
 
 @app.command()
 def convert(
-    location: str = typer.Argument(default=None, help=r"Path to file ie. C:\Users\Public\Downloads")
+    path: str = typer.Option(default=None, help=r"Path to directory where the file will be saved ie. C:\Users\Public\Downloads")
 ):
-    if expense_tracker.convert_to_csv(location):
-        print(f"Conversion succesful. File saved to: '{location}'")
+    #TODO - Need to figure out how I can save to the sepcified drive and location on the users's local machine and not VS codespaces
+    if expense_tracker.convert_to_csv(path):
+        rich.print(f"Conversion succesful. File saved to: '{path}'")
     else:
-        print(f"Could not save to: '{location}'")
+        rich.print(f"Could not save to: '{path}'")
     
-
 
 if __name__ == '__main__':
     app()

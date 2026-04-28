@@ -33,7 +33,7 @@ def warn(message: str) -> None:
 def error(message: str) -> None:
     console.print(f"[bold red]✖[/bold red] {message}")
 
-
+# Format dollar amounts
 def _money(value: Any) -> str:
     try:
         return f"${float(value):,.2f}"
@@ -98,7 +98,7 @@ def present_summary(summary: dict, month: Optional[int], year: Optional[int]) ->
         warn("No matching expenses found for that period.")
         return
 
-    # Category breakdown (top 5)
+    # Category breakdown
     by_cat: dict[str, float] = defaultdict(float)
     for r in expenses:
         try:
@@ -109,6 +109,7 @@ def present_summary(summary: dict, month: Optional[int], year: Optional[int]) ->
     cat_table = Table(title="Top Categories", header_style="bold cyan")
     cat_table.add_column("Category", style="magenta")
     cat_table.add_column("Total", justify="right")
+    # Sort each category up to 5 different categories by the float amount
     for cat, cat_total in sorted(by_cat.items(), key=lambda kv: kv[1], reverse=True)[:5]:
         cat_table.add_row(cat, _money(cat_total))
     console.print(cat_table)

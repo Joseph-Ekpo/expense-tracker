@@ -1,50 +1,20 @@
 import json
+import csv
 from pathlib import Path
 import datetime 
+
 
 
 # Defines the structure for an expense
 class Expense:
 
     def __init__(self, description: str, amount: float, date: str, category: str):
-        # if not Expense.validate_expense(description, amount, date, category):
-        #     # Don't create the object, raise an error or something? so that bad data isn't accepted
-        #     raise ValueError("Invalid input. Please retry")
-        # else:
-        #     self.id = None
-        #     self.description = description
-        #     self.amount = amount
-        #     self.date = date
-        #     self.category = category
         
         self.id = None
         self.description = description
         self.amount = amount
         self.date = date
         self.category = category
-    
-
-    @classmethod
-    def validate_expense(cls, description: str, amount: float, date: str, category: str) -> bool:
-        # Validate description is not empty
-        if not description.strip():
-            return False
-
-        # Validate amount is a positive number
-        if not isinstance(amount, (int, float)) or amount <= 0:
-            return False
-
-        # Validate date format (YYYY-MM-DD)
-        try:
-            datetime.datetime.strptime(date, "%Y-%m-%d")
-        except ValueError:
-            return False
-
-        # Validate category is not empty
-        if not category.strip():
-            return False
-
-        return True
     
 
 # Structure for handling expenses (adding, deleting, listing, summarizing + reading JSON)
@@ -111,7 +81,7 @@ class Tracker:
         
         rows.append(new_row)
         self.save_rows(rows)
-        # print(f"New expense (ID: {expense.id}) added successfully -->\n${expense.amount} | {expense.description} | {expense.date}")
+
         return expense.id
 
 
@@ -119,12 +89,12 @@ class Tracker:
     def delete(self, id) -> bool:
 
         rows = self.load_rows()
+        id_to_index = {r["id"]: i for i, r in enumerate((rows))}
 
-        for i, row in enumerate(rows):
-            if row["id"] == id:
-                del rows[i]
-                self.save_rows(rows)
-                return True
+        if id in id_to_index:
+            del rows[id_to_index[id]]
+            self.save_rows(rows)
+            return True
 
         return False
 
@@ -146,7 +116,7 @@ class Tracker:
 
 
     # List all Expenses
-    def list(self) -> list[dict]:
+    def list_expenses(self) -> list[dict]:
         data = self.load_rows()
         return data
 
@@ -159,9 +129,8 @@ class Tracker:
 
         # If there's no data, return a dict with a 0-total
         rows = self.load_rows()
-        if not rows[0]:
-            summary = {"total": 0.0, "highest":0.0, "expenses":[]}
-            return summary
+        if not rows:
+            return {"total": 0.0, "highest":0.0, "expenses":[]}
 
         total = 0.0
         highest = 0.0
@@ -220,10 +189,21 @@ class Tracker:
         return summary
 
     # Export the current data to csv 
-    def convert_to_csv(self, file_path):
-        #TODO
-        # implent invalid path, no write permissions
-        pass
+    def convert_to_csv(self, file_name, file_path) -> bool:
+        is_converted = False
+        expense_data = self.load_rows()
+        location = file_path + file_name + ".csv"
+        try:
+            with open(location, "w", encoding="utf-8", newline='') as f:
+                fieldnames = ['id', 'description', 'amount', 'date', 'category']
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(expense_data)
+                is_converted = True
+        except FileNotFoundError:
+            print(f"Error: Can't find {file_path}")
+        
+        return is_converted
 
 
 

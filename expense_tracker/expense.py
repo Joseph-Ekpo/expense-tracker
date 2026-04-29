@@ -188,23 +188,45 @@ class Tracker:
 
         return summary
 
-    # Export the current data to csv 
-    def convert_to_csv(self, file_name, file_path) -> bool:
-        is_converted = False
+    # Export the current data to csv
+    def convert_export_to_csv(self, saveto: str) -> Path | None:
         expense_data = self.load_rows()
-        location = file_path + file_name + ".csv"
+
+        # Create default filename, if user doesn't provide
+        file_name = f"exported-expenses-{datetime.date.today().isoformat()}.csv"
+
+        # Interpret user input
+        p = Path(saveto).expanduser() if saveto else (self.json_data_path.parent / "exports")
+
+        # If they gave a directory (no .csv suffix), save inside it
+        if p.suffix.lower() != ".csv":
+            out_dir = p
+            out_path = out_dir / file_name
+        else:
+            # They gave a full file path
+            out_path = p
+
+        # If relative path, make it relative to where they ran the command
+        if not out_path.is_absolute():
+            out_path = Path.cwd() / out_path
+
+        # Ensure parent folder exists
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+
         try:
-            with open(location, "w", encoding="utf-8", newline='') as f:
-                fieldnames = ['id', 'description', 'amount', 'date', 'category']
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
+            with out_path.open("w", encoding="utf-8", newline="") as f:
+                fieldnames = ["id", "description", "amount", "date", "category"]
+                writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
                 writer.writeheader()
                 writer.writerows(expense_data)
-                is_converted = True
-        except FileNotFoundError:
-            print(f"Error: Can't find {file_path}")
-        
-        return is_converted
 
+            return out_path
+        except PermissionError:
+            print(f"Error: No permission to write to '{out_path}'")
+            return None
+        except OSError as e:
+            print(f"Error: Could not write CSV to '{out_path}': {e}")
+            return None
 
 
 # Code For Testing Only

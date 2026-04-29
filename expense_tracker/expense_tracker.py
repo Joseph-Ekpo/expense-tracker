@@ -71,12 +71,11 @@ def summary(
 
 
 @app.command()
-def convert(
-    path: str = typer.Option(default=None, help=r"Path to directory where the file will be saved ie. C:\Users\Public\Downloads")
+def export_csv(
+    path: str = typer.Option("expenses.csv", "--saveto", help=r"Path to directory where the file will be saved ie. C:\Users\Public\Downloads")
 ):
-    #TODO - Need to figure out how I can save to the sepcified drive and location on the users's local machine and not VS codespaces
-    if expense_tracker.convert_to_csv(path):
-        rich.print(f"Conversion succesful. File saved to: '{path}'")
+    if expense_tracker.convert_export_to_csv(path):
+        rich.print(f"Conversion succesful. File saved: '{path}'")
     else:
         rich.print(f"Could not save to: '{path}'")
     

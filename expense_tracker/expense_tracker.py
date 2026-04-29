@@ -17,8 +17,6 @@ def add(
     category: str = typer.Option("misc", "--category", "-cat", help="General Category ie Food/Entertainment etc..")
     ):
     
-    added = expense_tracker.add(Expense(description, amount, date, category))
-    
     header("Add")
     added = expense_tracker.add(Expense(description, amount, date, category))
     success(f"Added expense [bold]{added}[/bold] · ${amount:,.2f}")
@@ -72,7 +70,7 @@ def summary(
 
 @app.command()
 def export_csv(
-    path: str = typer.Option("expenses.csv", "--saveto", help=r"Path to directory where the file will be saved ie. C:\Users\Public\Downloads")
+    path: str = typer.Option("expenses.csv", "--saveto", help=r"Path to directory --> C:\Users\Public\Downloads OR Full file path --> C:\Users\Public\Downloads\2026_Expenses.csv")
 ):
     if expense_tracker.convert_export_to_csv(path):
         rich.print(f"Conversion succesful. File saved: '{path}'")

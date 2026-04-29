@@ -19,9 +19,9 @@ class Expense:
 
 # Structure for handling expenses (adding, deleting, listing, summarizing + reading JSON)
 class Tracker:
-    def __init__(self):
+    def __init__(self, data_path: str | Path | None = None):
         # Create a path to the file used to read and write json data between calls to the app
-        self.json_data_path = Path.home() / ".expense-tracker" / "expenses.json"
+        self.json_data_path = Path(data_path).expanduser() if data_path else Path.home() / ".expense-tracker" / "expenses.json"
         # print("Creating '.expense-tracker' directory")
         self.json_data_path.parent.mkdir(parents=True, exist_ok=True)
         
@@ -198,12 +198,12 @@ class Tracker:
         # Interpret user input
         p = Path(saveto).expanduser() if saveto else (self.json_data_path.parent / "exports")
 
-        # If they gave a directory (no .csv suffix), save inside it
+        # If just directory (no .csv) save to that location with default filename
         if p.suffix.lower() != ".csv":
             out_dir = p
             out_path = out_dir / file_name
         else:
-            # They gave a full file path
+            # For full file path
             out_path = p
 
         # If relative path, make it relative to where they ran the command

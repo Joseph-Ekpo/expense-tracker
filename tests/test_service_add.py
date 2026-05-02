@@ -2,7 +2,7 @@ from expense_tracker.expense import Expense
 
 
 def test_add_expense_assigns_id_and_saves_row(tracker):
-    expense_id = tracker.add(
+    new_expense_returned_id = tracker.add(
         Expense(
             description="coffee",
             amount=4.50,
@@ -11,7 +11,7 @@ def test_add_expense_assigns_id_and_saves_row(tracker):
         )
     )
 
-    assert expense_id == 1
+    assert new_expense_returned_id == 1
     assert tracker.load_rows() == [
         {
             "id": 1,

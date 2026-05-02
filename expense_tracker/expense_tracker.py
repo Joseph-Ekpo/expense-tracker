@@ -49,7 +49,7 @@ def delete(id: int):
 
 
 @app.command()
-def ls():
+def list():
     header("List")
     expense_list_data = expense_tracker.list_expenses()
     if not expense_list_data:
@@ -72,8 +72,9 @@ def summary(
 def export_csv(
     path: str = typer.Option("expenses.csv", "--saveto", help=r"Path to directory --> C:\Users\Public\Downloads OR Full file path --> C:\Users\Public\Downloads\2026_Expenses.csv")
 ):
-    if expense_tracker.convert_export_to_csv(path):
-        rich.print(f"Conversion succesful. File saved: '{path}'")
+    result = expense_tracker.convert_export_to_csv(path)
+    if result:
+        rich.print(f"Conversion succesful. File saved to: '{result}'")
     else:
         rich.print(f"Could not save to: '{path}'")
     

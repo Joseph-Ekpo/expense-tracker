@@ -22,12 +22,11 @@ class Tracker:
     def __init__(self, data_path: str | Path | None = None):
         # Create a path to the file used to read and write json data between calls to the app
         self.json_data_path = Path(data_path).expanduser() if data_path else Path.home() / ".expense-tracker" / "expenses.json"
-        # print("Creating '.expense-tracker' directory")
+        
         self.json_data_path.parent.mkdir(parents=True, exist_ok=True)
         
         # If the JSON file does not already exist, create it
         if not self.json_data_path.exists():
-            print("JSON file did not exist, creating now...\n")
             with open(self.json_data_path, "w", encoding="utf-8") as f:
                 json.dump([], f, indent=2)
 
@@ -69,6 +68,7 @@ class Tracker:
         
         rows = self.load_rows()
         
+        # Make sure duplicate IDs cannot be created when adding an expense
         expense.id = 1 if not rows else (max(int(r["id"]) for r in rows) + 1)
 
         new_row = {

@@ -66,6 +66,10 @@ Clone the repo:
 git clone <your-repo-url>
 cd expense-tracker-main
 ```
+OR
+
+Download zip file from GitHub, extract it, then open the extracted project folder in Terminal
+
 
 Create and activate a virtual environment:
 

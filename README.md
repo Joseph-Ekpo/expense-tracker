@@ -8,7 +8,7 @@ This project lets you add expenses, store them locally, view spending summaries,
 
 ## Command Examples
 
-![Expense Tracker command list](docs/assets/ET%20Command%20List)
+![Expense Tracker command list](docs/assets/ET%20Command%20List.png)
 
 ---
 

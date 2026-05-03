@@ -6,12 +6,16 @@ This project lets you add expenses, store them locally, view spending summaries,
 
 ---
 
-## Demo
+## Command Examples
 
-![Expense Tracker CLI demo](docs/assets/demo.gif)
-![Expense Tracker CLI demo2](docs/assets/ET Command List.png)
+![Expense Tracker command list](docs/assets/ET%20Command%20List)
 
 ---
+
+## Demo
+_Commands can also be ran as a script_
+![Expense Tracker CLI demo](docs/assets/demo.gif)
+
 
 ## Features
 

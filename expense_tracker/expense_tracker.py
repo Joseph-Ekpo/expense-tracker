@@ -19,7 +19,7 @@ def add(
     
     header("Add")
     added = expense_tracker.add(Expense(description, amount, date, category))
-    success(f"Added expense ID[bold]{added}[/bold] · ${amount:,.2f}")
+    success(f"Added expense --> ID: [bold]{added}[/bold]")
     
 
 

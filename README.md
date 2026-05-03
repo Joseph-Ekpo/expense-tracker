@@ -8,7 +8,8 @@ This project lets you add expenses, store them locally, view spending summaries,
 
 ## Demo
 
-![Expense Tracker CLI demo](docs/assets/expense-tracker-demo.gif)
+![Expense Tracker CLI demo](docs/assets/demo.gif)
+![Expense Tracker CLI demo2](docs/assets/ET Command List.png)
 
 ---
 
@@ -115,6 +116,12 @@ View a monthly summary:
 expense-tracker summary --month 4 --year 2026
 ```
 
+View a complete summary:
+
+```bash
+expense-tracker summary
+```
+
 Export to CSV:
 
 ```bash
@@ -173,5 +180,5 @@ This project helped me practice:
 
 ## Author
 
-Built by Joseph Ekpo | LinkedIn: [Link Text](https://www.linkedin.com/in/joseph-ekpo-026bb3161/ "View on LinkedIn")
+Built by Joseph Ekpo | [LinkedIn](https://www.linkedin.com/in/joseph-ekpo-026bb3161/ "View on LinkedIn")
 

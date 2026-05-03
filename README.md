@@ -63,13 +63,12 @@ expense-tracker-main/
 Clone the repo:
 
 ```bash
-git clone <your-repo-url>
+git clone <https://github.com/Joseph-Ekpo/expense-tracker.git>
 cd expense-tracker-main
 ```
 OR
 
 Download zip file from GitHub, extract it, then open the extracted project folder in Terminal
-
 
 Create and activate a virtual environment:
 
